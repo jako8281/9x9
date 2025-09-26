@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="da">
 <head>
-    favicon.png
     <meta charset="UTF-8">
     <title>Tabeltræning</title>
+    favicon.png
     <style>
         body {
             background-color: black;
@@ -35,6 +34,11 @@
         #timer {
             margin-top: 20px;
             font-size: 18px;
+        }
+        .active-cell {
+            background-color: gold !important;
+            color: black !important;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -76,32 +80,39 @@
             }
         }
 
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timerDisplay.textContent = `Tid: ${elapsed} sekunder`;
+        }
+
         function showProblem() {
             if (currentIndex >= problems.length) {
                 clearInterval(timerInterval);
                 return;
             }
             const {x, y} = problems[currentIndex];
-            problemDiv.textContent = `${x} × ${y}`;
+            const cell = document.getElementById(`cell-${x}-${y}`);
+            cell.classList.add("active-cell");
+            cell.textContent = `${x} × ${y}`;
             answerInput.value = "";
             answerInput.focus();
         }
 
-        function startTimer() {
-            startTime = Date.now();
-            timerInterval = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                timerDisplay.textContent = `Tid: ${elapsed} sekunder`;
-            }, 1000);
+        function clearCell(x, y, result) {
+            const cell = document.getElementById(`cell-${x}-${y}`);
+            cell.classList.remove("active-cell");
+            cell.textContent = result;
         }
 
         answerInput.addEventListener("input", () => {
             const {x, y} = problems[currentIndex];
             const correct = x * y;
             if (parseInt(answerInput.value) === correct) {
-                if (!startTime) startTimer();
-                const cell = document.getElementById(`cell-${x}-${y}`);
-                cell.textContent = correct;
+                if (!startTime) {
+                    startTime = Date.now();
+                    timerInterval = setInterval(updateTimer, 1000);
+                }
+                clearCell(x, y, correct);
                 currentIndex++;
                 showProblem();
             }
