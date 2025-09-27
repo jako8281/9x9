@@ -162,5 +162,75 @@
       });
   }
 </script>
+<div style="position: fixed; bottom: 0; width: 100%; background: #eee; text-align: center; padding: 5px;">
+  <div id="dagensRekord">🥇 Dagens rekord: -- sekunder</div>
+  <div id="ugensRekord">🏆 Ugens rekord: -- sekunder</div>
+</div>
+<script>
+function opdaterRekorder(nyTid) {
+  const nu = new Date();
+
+  const dag = JSON.parse(localStorage.getItem("dagensRekord")) || {};
+  const uge = JSON.parse(localStorage.getItem("ugensRekord")) || {};
+
+  const dagTid = dag.tid;
+  const dagDato = new Date(dag.dato);
+  const ugeTid = uge.tid;
+  const ugeDato = new Date(uge.dato);
+
+  const timerSidenDag = (nu - dagDato) / (1000 * 60 * 60);
+  const dageSidenUge = (nu - ugeDato) / (1000 * 60 * 60 * 24);
+
+  let nyDagsrekord = false;
+  let nyUgerekord = false;
+  let navn = "";
+
+  if (timerSidenDag > 24 || !dagTid || nyTid < dagTid) {
+    nyDagsrekord = true;
+  }
+
+  if (dageSidenUge > 7 || !ugeTid || nyTid < ugeTid) {
+    nyUgerekord = true;
+  }
+
+  if (nyDagsrekord || nyUgerekord) {
+    navn = prompt("Tillykke! Du har slået en rekord. Skriv dit navn (valgfrit):") || "";
+  }
+
+  if (nyDagsrekord) {
+    localStorage.setItem("dagensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
+  }
+
+  if (nyUgerekord) {
+    localStorage.setItem("ugensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
+  }
+
+  visRekorder();
+}
+
+function visRekorder() {
+  const dag = JSON.parse(localStorage.getItem("dagensRekord"));
+  const uge = JSON.parse(localStorage.getItem("ugensRekord"));
+  const nu = new Date();
+
+  if (dag) {
+    const timerSiden = (nu - new Date(dag.dato)) / (1000 * 60 * 60);
+    if (timerSiden <= 24) {
+      document.getElementById("dagensRekord").textContent =
+        `🥇 Dagens rekord: ${dag.tid} sekunder${dag.navn ? " (" + dag.navn + ")" : ""}`;
+    }
+  }
+
+  if (uge) {
+    const dageSiden = (nu - new Date(uge.dato)) / (1000 * 60 * 60 * 24);
+    if (dageSiden <= 7) {
+      document.getElementById("ugensRekord").textContent =
+        `🏆 Ugens rekord: ${uge.tid} sekunder${uge.navn ? " (" + uge.navn + ")" : ""}`;
+    }
+  }
+}
+
+window.onload = visRekorder;
+</script>
 </body>
 </html>
