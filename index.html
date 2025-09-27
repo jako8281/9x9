@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-    <link rel="manifest" href="manifest.json" />
-    <link rel="icon" type="image/png" href="favicon.png">
+    <linkest.json
+    favicon.png
     <meta charset="UTF-8">
     <title>Tabeltræning</title>
     <style>
@@ -55,6 +55,16 @@
             border: none;
             cursor: pointer;
         }
+        #rekorder {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #eee;
+            color: black;
+            text-align: center;
+            padding: 5px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -65,6 +75,11 @@
     <div id="end-message">
         <p id="final-time"></p>
         <button id="retry-button">JA</button>
+    </div>
+
+    <div id="rekorder">
+        <div id="dagensRekord">🥇 Dagens rekord: -- sekunder</div>
+        <div id="ugensRekord">🏆 Ugens rekord: -- sekunder</div>
     </div>
 
     <script>
@@ -111,6 +126,7 @@
             if (currentIndex >= problems.length) {
                 clearInterval(timerInterval);
                 const totalTime = Math.floor((Date.now() - startTime) / 1000);
+                opdaterRekorder(totalTime);
                 finalTime.textContent = `Godt klaret! Din tid er ${totalTime} sekunder. Vil du prøve igen?`;
                 endMessage.style.display = "block";
                 answerInput.style.display = "none";
@@ -151,86 +167,84 @@
 
         showProblem();
     </script>
+
     <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/9x9/sw.js')
-      .then(function(registration) {
-        console.log('Service Worker registered with scope:', registration.scope);
-      })
-      .catch(function(error) {
-        console.log('Service Worker registration failed:', error);
-      });
-  }
-</script>
-<div style="position: fixed; bottom: 0; width: 100%; background: #eee; text-align: center; padding: 5px;">
-  <div id="dagensRekord">🥇 Dagens rekord: -- sekunder</div>
-  <div id="ugensRekord">🏆 Ugens rekord: -- sekunder</div>
-</div>
-<script>
-function opdaterRekorder(nyTid) {
-  const nu = new Date();
+        function opdaterRekorder(nyTid) {
+            const nu = new Date();
 
-  const dag = JSON.parse(localStorage.getItem("dagensRekord")) || {};
-  const uge = JSON.parse(localStorage.getItem("ugensRekord")) || {};
+            const dag = JSON.parse(localStorage.getItem("dagensRekord")) || {};
+            const uge = JSON.parse(localStorage.getItem("ugensRekord")) || {};
 
-  const dagTid = dag.tid;
-  const dagDato = new Date(dag.dato);
-  const ugeTid = uge.tid;
-  const ugeDato = new Date(uge.dato);
+            const dagTid = dag.tid;
+            const dagDato = new Date(dag.dato);
+            const ugeTid = uge.tid;
+            const ugeDato = new Date(uge.dato);
 
-  const timerSidenDag = (nu - dagDato) / (1000 * 60 * 60);
-  const dageSidenUge = (nu - ugeDato) / (1000 * 60 * 60 * 24);
+            const timerSidenDag = (nu - dagDato) / (1000 * 60 * 60);
+            const dageSidenUge = (nu - ugeDato) / (1000 * 60 * 60 * 24);
 
-  let nyDagsrekord = false;
-  let nyUgerekord = false;
-  let navn = "";
+            let nyDagsrekord = false;
+            let nyUgerekord = false;
+            let navn = "";
 
-  if (timerSidenDag > 24 || !dagTid || nyTid < dagTid) {
-    nyDagsrekord = true;
-  }
+            if (timerSidenDag > 24 || !dagTid || nyTid < dagTid) {
+                nyDagsrekord = true;
+            }
 
-  if (dageSidenUge > 7 || !ugeTid || nyTid < ugeTid) {
-    nyUgerekord = true;
-  }
+            if (dageSidenUge > 7 || !ugeTid || nyTid < ugeTid) {
+                nyUgerekord = true;
+            }
 
-  if (nyDagsrekord || nyUgerekord) {
-    navn = prompt("Tillykke! Du har slået en rekord. Skriv dit navn (valgfrit):") || "";
-  }
+            if (nyDagsrekord || nyUgerekord) {
+                navn = prompt("Tillykke! Du har slået en rekord. Skriv dit navn (valgfrit):") || "";
+            }
 
-  if (nyDagsrekord) {
-    localStorage.setItem("dagensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
-  }
+            if (nyDagsrekord) {
+                localStorage.setItem("dagensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
+            }
 
-  if (nyUgerekord) {
-    localStorage.setItem("ugensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
-  }
+            if (nyUgerekord) {
+                localStorage.setItem("ugensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
+            }
 
-  visRekorder();
-}
+            visRekorder();
+        }
 
-function visRekorder() {
-  const dag = JSON.parse(localStorage.getItem("dagensRekord"));
-  const uge = JSON.parse(localStorage.getItem("ugensRekord"));
-  const nu = new Date();
+        function visRekorder() {
+            const dag = JSON.parse(localStorage.getItem("dagensRekord"));
+            const uge = JSON.parse(localStorage.getItem("ugensRekord"));
+            const nu = new Date();
 
-  if (dag) {
-    const timerSiden = (nu - new Date(dag.dato)) / (1000 * 60 * 60);
-    if (timerSiden <= 24) {
-      document.getElementById("dagensRekord").textContent =
-        `🥇 Dagens rekord: ${dag.tid} sekunder${dag.navn ? " (" + dag.navn + ")" : ""}`;
-    }
-  }
+            if (dag) {
+                const timerSiden = (nu - new Date(dag.dato)) / (1000 * 60 * 60);
+                if (timerSiden <= 24) {
+                    document.getElementById("dagensRekord").textContent =
+                        `🥇 Dagens rekord: ${dag.tid} sekunder${dag.navn ? " (" + dag.navn + ")" : ""}`;
+                }
+            }
 
-  if (uge) {
-    const dageSiden = (nu - new Date(uge.dato)) / (1000 * 60 * 60 * 24);
-    if (dageSiden <= 7) {
-      document.getElementById("ugensRekord").textContent =
-        `🏆 Ugens rekord: ${uge.tid} sekunder${uge.navn ? " (" + uge.navn + ")" : ""}`;
-    }
-  }
-}
+            if (uge) {
+                const dageSiden = (nu - new Date(uge.dato)) / (1000 * 60 * 60 * 24);
+                if (dageSiden <= 7) {
+                    document.getElementById("ugensRekord").textContent =
+                        `🏆 Ugens rekord: ${uge.tid} sekunder${uge.navn ? " (" + uge.navn + ")" : ""}`;
+                }
+            }
+        }
 
-window.onload = visRekorder;
-</script>
+        window.onload = visRekorder;
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/9x9/sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+    </script>
 </body>
 </html>
