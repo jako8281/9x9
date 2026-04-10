@@ -6,256 +6,218 @@
     <meta charset="UTF-8">
     <title>Tabeltræning</title>
     <style>
-    body {
-        background-color: #333333;
-        color: white;
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 0;
-        padding: 20px;
-background-image: url('https://i.imgur.com/lDucWfA.jpeg');
-background-size: cover;         /* Fylder hele skærmen */
-background-repeat: no-repeat;   /* Undgår gentagelse */
-background-position: center;    /* Centrerer billedet */
-background-attachment: fixed;   /* Billedet ruller ikke med siden */
-    }
-    table {
-        margin: auto;
-        border-collapse: collapse;
-    }
-    td {
-        width: 60px;
-        height: 60px;
-        border: 3px solid gray;
-        text-align: center;
-        vertical-align: middle;
-        font-size: 20px;
-    }
-    input[type="number"] {
-        font-size: 20px;
-        width: 80px;
-        padding: 5px;
-        margin-top: 0px;
-        background-color: transparent;
-        color: white;
-        border: 1px solid gray;
-        -moz-appearance: textfield; /* Fjern pile i Firefox */
-    }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none; /* Fjern pile i Chrome, Safari, Edge */
-        margin: 0;
-    }
-    #timer {
-        display: none;
-    }
-    .active-cell {
-        background-color: gold !important;
-        color: black !important;
-        font-weight: bold;
-    }
-    #end-message {
-        margin-top: 30px;
-        font-size: 24px;
-        display: none;
-    }
-    #retry-button {
-        margin-top: 10px;
-        padding: 10px 20px;
-        font-size: 18px;
-        background-color: gold;
-        color: black;
-        border: none;
-        cursor: pointer;
-    }
-    #rekorder {
-        bottom: 0;
-        width: 100%;
-        background-color: transparent;
-        color: white;
-        text-align: center;
-        padding: 5px;
-        font-size: 16px;
-    }
-</style>
+        body {
+            background-color: #333333;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://i.imgur.com/lDucWfA.jpeg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        table {
+            margin: auto;
+            border-collapse: collapse;
+        }
+        td {
+            width: 60px;
+            height: 60px;
+            border: 3px solid gray;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+        input[type="number"] {
+            font-size: 20px;
+            width: 80px;
+            padding: 5px;
+            background-color: transparent;
+            color: white;
+            border: 1px solid gray;
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #timer {
+            display: none;
+        }
+        .active-cell {
+            background-color: gold !important;
+            color: black !important;
+            font-weight: bold;
+        }
+        #end-message {
+            margin-top: 30px;
+            font-size: 24px;
+            display: none;
+        }
+        #retry-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: gold;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        #rekorder {
+            bottom: 0;
+            width: 100%;
+            background-color: transparent;
+            color: white;
+            text-align: center;
+            padding: 5px;
+            font-size: 16px;
+        }
+    </style>
 </head>
+
 <body>
-    <table id="grid"></table>
-    <div id="problem" style="margin-top: 20px; font-size: 24px;"></div>
-    <input type="number" id="answer" placeholder="Svar">
-    <div id="timer">Tid: 0 sekunder</div>
-    <div id="end-message">
-        <p id="final-time"></p>
-        <button id="retry-button">JA</button>
-    </div>
 
-    <div id="rekorder">
-        <div id="dagensRekord">🥇 Dagens rekord: -- sekunder</div>
-        <div id="ugensRekord">🏆 Ugens rekord: -- sekunder</div>
-    </div>
+<table id="grid"></table>
+<div id="problem" style="margin-top: 20px; font-size: 24px;"></div>
+<input type="number" id="answer" placeholder="Svar">
+<div id="timer">Tid: 0 sekunder</div>
 
-    <script>
-        const grid = document.getElementById("grid");
-        const problemDiv = document.getElementById("problem");
-        const answerInput = document.getElementById("answer");
-        const timerDisplay = document.getElementById("timer");
-        const endMessage = document.getElementById("end-message");
-        const finalTime = document.getElementById("final-time");
-        const retryButton = document.getElementById("retry-button");
+<div id="end-message">
+    <p id="final-time"></p>
+    <button id="retry-button">JA</button>
+</div>
 
-        let problems = [];
-        for (let i = 1; i <= 9; i++) {
-            for (let j = 1; j <= 9; j++) {
-                problems.push({x: i, y: j});
-            }
-        }
+<div id="rekorder">
+    <div id="dagensRekord">🥇 Dagens rekord: -- sekunder</div>
+    <div id="aaretsRekord">🏆 Årets rekord: -- sekunder</div>
+</div>
 
-        // Shuffle problems
-        for (let i = problems.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [problems[i], problems[j]] = [problems[j], problems[i]];
-        }
+<script>
+const grid = document.getElementById("grid");
+const problemDiv = document.getElementById("problem");
+const answerInput = document.getElementById("answer");
+const endMessage = document.getElementById("end-message");
+const finalTime = document.getElementById("final-time");
+const retryButton = document.getElementById("retry-button");
 
-        let currentIndex = 0;
-        let startTime = null;
-        let timerInterval = null;
+let problems = [];
+for (let i = 1; i <= 9; i++) {
+    for (let j = 1; j <= 9; j++) {
+        problems.push({x: i, y: j});
+    }
+}
 
-        // Create grid
-        for (let i = 0; i < 9; i++) {
-            const row = grid.insertRow();
-            for (let j = 0; j < 9; j++) {
-                const cell = row.insertCell();
-                cell.id = `cell-${i+1}-${j+1}`;
-            }
-        }
+// Shuffle
+for (let i = problems.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [problems[i], problems[j]] = [problems[j], problems[i]];
+}
 
-        function updateTimer() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            timerDisplay.textContent = `Tid: ${elapsed} sekunder`;
-        }
+let currentIndex = 0;
+let startTime = null;
 
-        function showProblem() {
-            if (currentIndex >= problems.length) {
-                clearInterval(timerInterval);
-                const totalTime = Math.floor((Date.now() - startTime) / 1000);
-                opdaterRekorder(totalTime);
-                finalTime.textContent = `Godt klaret! Din tid er ${totalTime} sekunder. Vil du prøve igen?`;
-                endMessage.style.display = "block";
-                answerInput.style.display = "none";
-                problemDiv.style.display = "none";
-                return;
-            }
-            const {x, y} = problems[currentIndex];
-            const cell = document.getElementById(`cell-${x}-${y}`);
-            cell.classList.add("active-cell");
-            cell.textContent = `${x} × ${y}`;
-            answerInput.value = "";
-            answerInput.focus();
-        }
+// Grid
+for (let i = 0; i < 9; i++) {
+    const row = grid.insertRow();
+    for (let j = 0; j < 9; j++) {
+        const cell = row.insertCell();
+        cell.id = `cell-${i+1}-${j+1}`;
+    }
+}
 
-        function clearCell(x, y, result) {
-            const cell = document.getElementById(`cell-${x}-${y}`);
-            cell.classList.remove("active-cell");
-            cell.textContent = result;
-        }
+function showProblem() {
+    if (currentIndex >= problems.length) {
+        const totalTime = Math.floor((Date.now() - startTime) / 1000);
+        opdaterRekorder(totalTime);
+        finalTime.textContent = `Godt klaret! Din tid er ${totalTime} sekunder. Vil du prøve igen?`;
+        endMessage.style.display = "block";
+        answerInput.style.display = "none";
+        problemDiv.style.display = "none";
+        return;
+    }
+    const {x, y} = problems[currentIndex];
+    const cell = document.getElementById(`cell-${x}-${y}`);
+    cell.classList.add("active-cell");
+    cell.textContent = `${x} × ${y}`;
+    answerInput.value = "";
+    answerInput.focus();
+}
 
-        answerInput.addEventListener("input", () => {
-            const {x, y} = problems[currentIndex];
-            const correct = x * y;
-            if (parseInt(answerInput.value) === correct) {
-                if (!startTime) {
-                    startTime = Date.now();
-                    timerInterval = setInterval(updateTimer, 1000);
-                }
-                clearCell(x, y, correct);
-                currentIndex++;
-                showProblem();
-            }
-        });
+function clearCell(x, y, result) {
+    const cell = document.getElementById(`cell-${x}-${y}`);
+    cell.classList.remove("active-cell");
+    cell.textContent = result;
+}
 
-        retryButton.addEventListener("click", () => {
-            location.reload();
-        });
-
+answerInput.addEventListener("input", () => {
+    const {x, y} = problems[currentIndex];
+    const correct = x * y;
+    if (parseInt(answerInput.value) === correct) {
+        if (!startTime) startTime = Date.now();
+        clearCell(x, y, correct);
+        currentIndex++;
         showProblem();
-    </script>
+    }
+});
 
-    <script>
-        function opdaterRekorder(nyTid) {
-            const nu = new Date();
+retryButton.addEventListener("click", () => location.reload());
 
-            const dag = JSON.parse(localStorage.getItem("dagensRekord")) || {};
-            const uge = JSON.parse(localStorage.getItem("ugensRekord")) || {};
-
-            const dagTid = dag.tid;
-            const dagDato = new Date(dag.dato);
-            const ugeTid = uge.tid;
-            const ugeDato = new Date(uge.dato);
-
-            const timerSidenDag = (nu - dagDato) / (1000 * 60 * 60);
-            const dageSidenUge = (nu - ugeDato) / (1000 * 60 * 60 * 24);
-
-            let nyDagsrekord = false;
-            let nyUgerekord = false;
-            let navn = "";
-
-            if (timerSidenDag > 24 || !dagTid || nyTid < dagTid) {
-                nyDagsrekord = true;
-            }
-
-            if (dageSidenUge > 7 || !ugeTid || nyTid < ugeTid) {
-                nyUgerekord = true;
-            }
-
-            if (nyDagsrekord || nyUgerekord) {
-                navn = prompt("Tillykke! Du har slået en rekord. Skriv dit navn (valgfrit):") || "";
-            }
-
-            if (nyDagsrekord) {
-                localStorage.setItem("dagensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
-            }
-
-            if (nyUgerekord) {
-                localStorage.setItem("ugensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
-            }
-
-            visRekorder();
-        }
-
-        function visRekorder() {
-            const dag = JSON.parse(localStorage.getItem("dagensRekord"));
-            const uge = JSON.parse(localStorage.getItem("ugensRekord"));
-            const nu = new Date();
-
-            if (dag) {
-                const timerSiden = (nu - new Date(dag.dato)) / (1000 * 60 * 60);
-                if (timerSiden <= 24) {
-                    document.getElementById("dagensRekord").textContent =
-                        `🥇 Dagens rekord: ${dag.tid} sekunder${dag.navn ? " (" + dag.navn + ")" : ""}`;
-                }
-            }
-
-            if (uge) {
-                const dageSiden = (nu - new Date(uge.dato)) / (1000 * 60 * 60 * 24);
-                if (dageSiden <= 7) {
-                    document.getElementById("ugensRekord").textContent =
-                        `🏆 Ugens rekord: ${uge.tid} sekunder${uge.navn ? " (" + uge.navn + ")" : ""}`;
-                }
-            }
-        }
-
-        window.onload = visRekorder;
-    </script>
-    <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/9x9/sw.js')
-      .then(function(registration) {
-        console.log('Service Worker registered with scope:', registration.scope);
-      })
-      .catch(function(error) {
-        console.log('Service Worker registration failed:', error);
-      });
-  }
+showProblem();
 </script>
+
+<script>
+function opdaterRekorder(nyTid) {
+    const nu = new Date();
+
+    const dag = JSON.parse(localStorage.getItem("dagensRekord")) || {};
+    const aar = JSON.parse(localStorage.getItem("aaretsRekord")) || {};
+
+    const nyDag = !dag.tid || (nu - new Date(dag.dato)) > 86400000 || nyTid < dag.tid;
+    const nyAar = !aar.tid || (nu - new Date(aar.dato)) > 365 * 86400000 || nyTid < aar.tid;
+
+    let navn = "";
+    if (nyDag || nyAar) {
+        navn = prompt("Tillykke! Du har slået en rekord. Skriv dit navn (valgfrit):") || "";
+    }
+
+    if (nyDag) {
+        localStorage.setItem("dagensRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
+    }
+    if (nyAar) {
+        localStorage.setItem("aaretsRekord", JSON.stringify({ tid: nyTid, dato: nu, navn }));
+    }
+
+    visRekorder();
+}
+
+function visRekorder() {
+    const dag = JSON.parse(localStorage.getItem("dagensRekord"));
+    const aar = JSON.parse(localStorage.getItem("aaretsRekord"));
+    const nu = new Date();
+
+    if (dag && (nu - new Date(dag.dato)) <= 86400000) {
+        document.getElementById("dagensRekord").textContent =
+            `🥇 Dagens rekord: ${dag.tid} sekunder${dag.navn ? " ("+dag.navn+")" : ""}`;
+    }
+
+    if (aar && (nu - new Date(aar.dato)) <= 365 * 86400000) {
+        document.getElementById("aaretsRekord").textContent =
+            `🏆 Årets rekord: ${aar.tid} sekunder${aar.navn ? " ("+aar.navn+")" : ""}`;
+    }
+}
+
+window.onload = visRekorder;
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/9x9/sw.js');
+}
+</script>
+
 </body>
 </html>
